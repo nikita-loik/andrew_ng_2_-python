@@ -1,9 +1,37 @@
-# 1 ===========================================================================
-def get_hypothesis(β, X):
+
+
+
+# UTILITY FUNCTIONS ===========================================================
+def get_sigmoid(
+        z):
+    return 1 / (1 + np.exp(-z))
+
+
+def get_hypothesis(β, X):  #1
 #     return hypothesis vector h(n, 1), where n is n_samples
     return np.dot(X, β)
 
 
+def get_hypothesis(β, X, n_samples, n_variables):  #2
+    β = β.reshape(n_variables, -1)
+    X = X.reshape(n_samples, -1)
+    return get_sigmoid(np.dot(X, β))
+
+
+def get_hypothesis(β, X):  #3
+#     h(5000x1) = X(5000x401)*β(401x1)
+    return get_sigmoid(np.dot(X, β[:, None]))
+
+
+def get_hypothesis(β, X, n_samples, n_variables):  #5
+    β = β.reshape(n_variables, -1)
+    X = X.reshape(n_samples, -1)
+#     return hypothesis vector h(n, 1), where n is n_samples
+    return np.dot(X, β)
+
+
+
+# 1 ===========================================================================
 def cost_function(β, X, y):
     n_samples, n_variables = X.shape
 #     hypothesis vector h(n, 1)
@@ -36,15 +64,6 @@ def get_gradient_descent(β, X, y, α, iterations):
 
 
 # 2 ===========================================================================
-def get_sigmoid(z):
-    return 1/(1 + np.exp(-z))
-
-
-def get_hypothesis(β, X, n_samples, n_variables):
-    β = β.reshape(n_variables, -1)
-    X = X.reshape(n_samples, -1)
-    return get_sigmoid(np.dot(X, β))
-
 # def cost_function(X, y, β):
 def cost_function(β, X, y, n_samples, n_variables, λ=0.):
 #     β = β.reshape(n_variables, -1)
@@ -68,15 +87,6 @@ def get_prediction(β, X, n_samples, n_variables):
 
 
 # 3 ===========================================================================
-def get_sigmoid(z):
-    return 1/(1+np.exp(-z))
-
-
-def get_hypothesis(β, X):
-#     h(5000x1) = X(5000x401)*β(401x1)
-    return get_sigmoid(np.dot(X, β[:, None]))
-
-
 def cost_function(β, X, y, λ = 0.):
     n_samples, n_variables = X.shape  # X(5000x401)
 #     hypothesis vector h(5000x1) = X(5000x401)*β(401x1)
@@ -104,8 +114,7 @@ def get_gradient(β, X, y, λ=0.):
 
 
 # 4 ===========================================================================
-def get_sigmoid(z):
-    return 1/(1+np.exp(-z))
+
 
 
 def forward_propagation(β_flat, layer, X_flat, n_samples):
@@ -126,7 +135,7 @@ def forward_propagation(β_flat, layer, X_flat, n_samples):
 #     H_2 (5000, 10)
     return H_byLayer
 
-def get_sigmoid_get_gradient(Z):
+def get_sigmoid_gradient(Z):
     return get_sigmoid(Z)*(1-get_sigmoid(Z))
 
 
@@ -160,19 +169,13 @@ def cost_function(β_flat, layer, X_flat, n_samples, y, yUnique, λ = 0.):
 #     error matrix E(5000, 10)
     E = H[len(layer)-2] - Y
     for l in reversed(range(len(layer)-1)):
-        E = np.dot(E*get_sigmoid_get_gradient(H[l]), β_set[l])[:,1:]
+        E = np.dot(E*get_sigmoid_gradient(H[l]), β_set[l])[:,1:]
         deltaSet = (np.dot(H[l].T, np.insert(E, 0, 1, axis=1)),) + deltaSet
     flatDelta = flatten_β(deltaSet)
     return β_flat + flatDelta/n_samples
 
 
 # 5 ===========================================================================
-def get_hypothesis(β, X, n_samples, n_variables):
-    β = β.reshape(n_variables, -1)
-    X = X.reshape(n_samples, -1)
-#     return hypothesis vector h(n, 1), where n is n_samples
-    return np.dot(X, β)
-
 def cost_function(β, X, y, n_samples, n_variables, λ=0.):
     β = β.reshape(n_variables, -1)
     X = X.reshape(n_samples, -1)
